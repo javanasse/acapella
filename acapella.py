@@ -7,9 +7,30 @@ import random
 import warnings
 import logging
 
+import torch
+import torchaudio
+from torch.utils.data import Dataset, DataLoader
+
 import yt_dlp
 import soundfile as sf
 import librosa
+
+"""
+This is a helper file for working with the Acapella Dataset hosted
+at [1] and published in [2]. It is a list of youtube videos comprising 
+46 hours of solo, non-professional, acapella singing. Each entry 
+is a youtube id with some information about the singer and the 
+program material (languange, for example).
+
+Download audio dataset using `download_acapellas`.
+
+[1] https://ipcv.github.io/Acappella/acappella/
+[2] Montesinos, Juan F., Venkatesh S. Kadandale, and Gloria Haro. 
+    “A Cappella: Audio-Visual Singing Voice Separation.” arXiv, 
+    October 18, 2021. http://arxiv.org/abs/2104.09946.
+
+"""
+
 
 # logger setup
 logging.basicConfig(filename=os.path.join("log.txt"), 
@@ -34,13 +55,11 @@ def parse_time_str(time_str):
     seconds += 60 * minutes
     return seconds
 
-def download_acapellas(num_acapellas, destination_dir='.'):
+def download_acapellas(num_entries, destination_dir='.'):
     """Acapellas"""
     data_register = "acapella_info.csv"
     total_num_entries = get_num_lines(data_register)
-    num_entries = num_acapellas
     entry_row_idxs = random.sample(range(0, total_num_entries), num_entries)
-    # entry_row_idxs = [0, 1, 45]
 
     # read rows
     with open(data_register, 'r') as f:
