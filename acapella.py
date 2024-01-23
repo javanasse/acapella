@@ -55,11 +55,18 @@ def parse_time_str(time_str):
     seconds += 60 * minutes
     return seconds
 
-def download_acapellas(num_entries, destination_dir='.'):
-    """Acapellas"""
-    data_register = "acapella_info.csv"
+def download_acapellas(num_entries=1494, destination_dir='.', randomize=False):
+    
+    data_register = "./acapella_info.csv"
     total_num_entries = get_num_lines(data_register)
-    entry_row_idxs = random.sample(range(0, total_num_entries), num_entries)
+
+    if num_entries > total_num_entries:
+        num_entries = total_num_entries
+
+    if randomize:
+        entry_row_idxs = random.sample(range(0, total_num_entries), num_entries)
+    else:
+        entry_row_idxs = range(0, num_entries)
 
     # read rows
     with open(data_register, 'r') as f:
@@ -117,3 +124,6 @@ def download_acapellas(num_entries, destination_dir='.'):
             sf.write(outfilepath, audio, sample_rate)
 
             logging.info(f"Successfully downloaded Row {idx}.")
+
+if __name__ == "__main__":
+    download_acapellas(1)
